@@ -1,0 +1,18 @@
+---
+- name: Create transactor
+  hosts: localhost
+  connection: local
+
+  tasks:
+    - name: Include vars of config.yaml.
+      include_vars:
+        file: ./../config.yaml
+      no_log: True
+
+    - name: Download Datomic pro
+      get_url:
+        url: 'https://my.datomic.com/repo/com/datomic/datomic-pro/{{ version }}/datomic-pro-{{ version }}.zip'
+        dest: './../datomic-pro-{{ version }}.zip'
+        username: '{{ datomic_username }}'
+        password: '{{ datomic_password }}'
+
