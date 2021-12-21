@@ -15,4 +15,21 @@
         dest: './../datomic-pro-{{ version }}.zip'
         username: '{{ datomic_username }}'
         password: '{{ datomic_password }}'
+      no_log: True
+
+    - name: Extract datomic pro into
+      ansible.builtin.unarchive:
+        src: './../datomic-pro-{{ version }}.zip'
+        dest: ./../
+
+    #- name: Remove zip
+      #ansible.builtin.file:
+        #path: './../datomic-pro-{{ version }}.zip'
+        #state: absent
+
+    - name: Template ddb to ddb-transactor.properties
+      ansible.builtin.template:
+        src: ./../templates/ddb-transactor-template.j2
+        dest: ./../ddb-transactor.properties
+        mode: '0644'
 
