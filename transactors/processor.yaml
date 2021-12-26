@@ -1,0 +1,11 @@
+---
+- name: Create processor transactor
+  hosts: localhost
+  connection: local
+  tasks:
+    - name: Create transactor
+      include_tasks: ./../playbooks/create_transactor.yaml
+      vars:
+        table_name: processor
+        aws_region: us-east-1
+        version: 1.0.6344

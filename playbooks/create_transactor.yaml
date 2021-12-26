@@ -1,86 +1,80 @@
 ---
-- name: Create transactor
-  hosts: localhost
-  connection: local
+- name: Include vars of config.yaml.
+  include_vars:
+    file: ./../config.yaml
+  no_log: true
 
-  tasks:
-    - name: Include vars of config.yaml.
-      include_vars:
-        file: ./../config.yaml
-      no_log: True
+- name: Download Datomic pro
+  get_url:
+    url: 'https://my.datomic.com/repo/com/datomic/datomic-pro/{{ version }}/datomic-pro-{{ version }}.zip'
+    dest: './../datomic-pro-{{ version }}.zip'
+    username: '{{ datomic_username }}'
+    password: '{{ datomic_password }}'
+  no_log: true
 
-    - name: Download Datomic pro
-      get_url:
-        url: 'https://my.datomic.com/repo/com/datomic/datomic-pro/{{ version }}/datomic-pro-{{ version }}.zip'
-        dest: './../datomic-pro-{{ version }}.zip'
-        username: '{{ datomic_username }}'
-        password: '{{ datomic_password }}'
-      no_log: True
+- name: Extract datomic pro into
+  ansible.builtin.unarchive:
+    src: './../datomic-pro-{{ version }}.zip'
+    dest: ./../
 
-    - name: Extract datomic pro into
-      ansible.builtin.unarchive:
-        src: './../datomic-pro-{{ version }}.zip'
-        dest: ./../
+# - name: Remove zip
+  # ansible.builtin.file:
+    # path: './../datomic-pro-{{ version }}.zip'
+    # state: absent
 
-    #- name: Remove zip
-      #ansible.builtin.file:
-        #path: './../datomic-pro-{{ version }}.zip'
-        #state: absent
+#- name: Create dynamo table with primary key
+#  community.aws.dynamodb_table:
+#    name: '{{ table_name }}'
+#    region: '{{ aws_region }}'
+#    hash_key_name: id
+#    hash_key_type: STRING
+#    read_capacity: 1
+#    write_capacity: 1
+#    tags:
+#      name: '{{ table_name }}'
 
-    - name: Create dynamo table with primary key
-      community.aws.dynamodb_table:
-        name: '{{ table_name }}'
-        region: '{{ aws_region }}'
-        hash_key_name: id
-        hash_key_type: STRING
-        read_capacity: 1
-        write_capacity: 1
-        tags:
-          name: '{{ table_name }}'
+- name: Get the current caller identity information
+  amazon.aws.aws_caller_info:
+  register: caller_info
 
-    - name: Get the current caller identity information
-      amazon.aws.aws_caller_info:
-      register: caller_info
+- name: Create the transactor role
+  community.aws.iam_role:
+    name: '{{ table_name }}-transactor-role'
+    purge_policies: false
+    assume_role_policy_document: "{{ lookup('template','./../templates/transactor-role.json.j2') }}"
+    description: Transactor role
+    tags:
+      name: '{{ table_name }}-transactor-role'
+  register: transactor_role
 
-    - name: Create the transactor role
-      community.aws.iam_role:
-        name: '{{ table_name }}-transactor-role'
-        purge_policies: false
-        assume_role_policy_document: "{{ lookup('template','./../templates/transactor-role.json.j2') }}"
-        description: Transactor role
-        tags:
-          name: '{{ table_name }}-transactor-role'
-      register: transactor_role
+- name: Create the transactor policy
+  community.aws.iam_policy:
+    iam_type: role
+    iam_name: '{{ transactor_role.role_name }}'
+    policy_name: '{{ table_name }}-transactor-policy'
+    state: present
+    policy_json: "{{ lookup( 'template', './../templates/transactor-policy.json.j2') }}"
 
-    - name: Create the transactor policy
-      community.aws.iam_policy:
-        iam_type: role
-        iam_name: '{{ transactor_role.role_name }}'
-        policy_name: '{{ table_name }}-transactor-policy'
-        state: present
-        policy_json: "{{ lookup( 'template', './../templates/transactor-policy.json.j2') }}"
+- name: Create the peer role
+  community.aws.iam_role:
+    name: '{{ table_name }}-peer-role'
+    purge_policies: false
+    assume_role_policy_document: "{{ lookup('template','./../templates/peer-role.json.j2') }}"
+    description: Peer role
+    tags:
+      name: '{{ table_name }}-peer-role'
+  register: peer_role
 
-    - name: Create the peer role
-      community.aws.iam_role:
-        name: '{{ table_name }}-peer-role'
-        purge_policies: false
-        assume_role_policy_document: "{{ lookup('template','./../templates/peer-role.json.j2') }}"
-        description: Peer role
-        tags:
-          name: '{{ table_name }}-peer-role'
-      register: peer_role
+- name: Create the peer policy
+  community.aws.iam_policy:
+    iam_type: role
+    iam_name: '{{ peer_role.role_name }}'
+    policy_name: '{{ table_name }}-peer-policy'
+    state: present
+    policy_json: "{{ lookup( 'template', './../templates/peer-policy.json.j2') }}"
 
-    - name: Create the peer policy
-      community.aws.iam_policy:
-        iam_type: role
-        iam_name: '{{ peer_role.role_name }}'
-        policy_name: '{{ table_name }}-peer-policy'
-        state: present
-        policy_json: "{{ lookup( 'template', './../templates/peer-policy.json.j2') }}"
-
-    - name: Template ddb to ddb-transactor.properties
-      ansible.builtin.template:
-        src: ./../templates/ddb-transactor-template.j2
-        dest: ./../ddb-transactor.properties
-        mode: '0644'
-
+- name: Template ddb to ddb-transactor.properties
+  ansible.builtin.template:
+    src: ./../templates/ddb-transactor-template.j2
+    dest: ./../ddb-transactor.properties
+    mode: '0644'
