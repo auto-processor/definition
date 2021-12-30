@@ -3,6 +3,7 @@
   hosts: localhost
   connection: local
   tasks:
+
     - name: Create transactor
       include_tasks: ./../playbooks/create_transactor.yaml
       vars:
