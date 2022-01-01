@@ -6,6 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: pip install boto3
       - name: Setup
         uses: aws-actions/configure-aws-credentials@v1
         with:
