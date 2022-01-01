@@ -5,6 +5,7 @@ jobs:
     name: Deploy transactors
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Setup
         uses: aws-actions/configure-aws-credentials@v1
         with:
