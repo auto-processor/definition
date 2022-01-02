@@ -8,7 +8,7 @@
         "dynamodb:Scan",
         "dynamodb:Query"
       ],
-      "Resource": "arn:aws:dynamodb:*:{{ caller_info.account }}:table/{{ table_name }}"
+      "Resource": "arn:aws:dynamodb:*:{{ caller_info.account }}:table/{{ item.table_name }}"
     }
   ]
 }

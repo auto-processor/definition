@@ -1,17 +1,15 @@
 ---
-- name: Add common vars
-  include_vars: ./../transactors/helpers/common_vars.yaml
 
 - name: Create dynamo table with primary key
   community.aws.dynamodb_table:
-    name: '{{ table_name }}'
-    region: '{{ aws_region }}'
+    name: '{{ item.table_name }}'
+    region: '{{ item.aws_region }}'
     hash_key_name: id
     hash_key_type: STRING
     read_capacity: 1
     write_capacity: 1
     tags:
-      name: '{{ table_name }}'
+      name: '{{ item.table_name }}'
 
 - name: Get the current caller identity information
   amazon.aws.aws_caller_info:
@@ -19,63 +17,63 @@
 
 - name: Create the transactor role
   community.aws.iam_role:
-    name: '{{ table_name }}-transactor-role'
+    name: '{{ item.table_name }}-transactor-role'
     purge_policies: false
-    assume_role_policy_document: "{{ lookup('template','./../templates/transactor-role.json.j2') }}"
+    assume_role_policy_document: "{{ lookup('template','transactor-role.json.j2') }}"
     description: Transactor role
     tags:
-      name: '{{ table_name }}-transactor-role'
+      name: '{{ item.table_name }}-transactor-role'
   register: transactor_role
 
 - name: Create the transactor policy
   community.aws.iam_policy:
     iam_type: role
     iam_name: '{{ transactor_role.role_name }}'
-    policy_name: '{{ table_name }}-transactor-policy'
+    policy_name: '{{ item.table_name }}-transactor-policy'
     state: present
-    policy_json: "{{ lookup( 'template', './../templates/transactor-policy.json.j2') }}"
+    policy_json: "{{ lookup( 'template', 'transactor-policy.json.j2') }}"
 
 - name: Create the peer role
   community.aws.iam_role:
-    name: '{{ table_name }}-peer-role'
+    name: '{{ item.table_name }}-peer-role'
     purge_policies: false
-    assume_role_policy_document: "{{ lookup('template','./../templates/peer-role.json.j2') }}"
+    assume_role_policy_document: "{{ lookup('template','peer-role.json.j2') }}"
     description: Peer role
     tags:
-      name: '{{ table_name }}-peer-role'
+      name: '{{ item.table_name }}-peer-role'
   register: peer_role
 
 - name: Create the peer policy
   community.aws.iam_policy:
     iam_type: role
     iam_name: '{{ peer_role.role_name }}'
-    policy_name: '{{ table_name }}-peer-policy'
+    policy_name: '{{ item.table_name }}-peer-policy'
     state: present
-    policy_json: "{{ lookup( 'template', './../templates/peer-policy.json.j2') }}"
+    policy_json: "{{ lookup( 'template', 'peer-policy.json.j2') }}"
 
 - name: datomic security group
   amazon.aws.ec2_group:
     name: '{{ sg_name }}'
     description: 'Provisioned by Me'
     vpc_id: '{{ vpc_id }}'
-    region: '{{ aws_region }}'
+    region: '{{ item.aws_region }}'
     rules:
       - proto: tcp
-        from_port: '{{ port }}'
-        to_port: '{{ port }}'
+        from_port: '{{ datomic_port }}'
+        to_port: '{{ datomic_port }}'
         group_name: '{{ sg_name }}'
-        rule_desc: 'allow {{ sg_name }} on port {{ port }}'
+        rule_desc: 'allow {{ sg_name }} on port {{ datomic_port }}'
       - proto: tcp
-        from_port: '{{ port }}'
-        to_port: '{{ port }}'
+        from_port: '{{ datomic_port }}'
+        to_port: '{{ datomic_port }}'
         cidr_ip: 0.0.0.0/0
-        rule_desc: 'allow all on port {{ port }}'
+        rule_desc: 'allow all on port {{ datomic_port }}'
   register: sg
 
 - name: Create an ec2 launch template
   community.aws.ec2_launch_template:
-    name: '{{ table_name }}-transactor-template'
-    image_id: '{{ image_ids[aws_region] }}'
+    name: '{{ item.table_name }}-transactor-template'
+    image_id: '{{ image_ids[item.aws_region] }}'
     user_data: '{{ user_data | string | b64encode }}'
     instance_type: t2.micro
     iam_instance_profile: '{{ transactor_role.role_name }}'
@@ -88,14 +86,14 @@
 
 - name: Create an ec2 autoscaling group
   community.aws.ec2_asg:
-    name: '{{ table_name }}-transactor-autoscaling-group'
+    name: '{{ item.table_name }}-transactor-autoscaling-group'
     launch_template:
       launch_template_name: '{{ launch_template.latest_template.launch_template_name }}'
       launch_template_id: '{{ launch_template.latest_template.launch_template_id }}'
     min_size: 1
     max_size: 1
     desired_capacity: 1
-    region: '{{ aws_region }}'
+    region: '{{ item.aws_region }}'
     tags:
-      - Name: '{{ table_name }}-transactor'
+      - Name: '{{ item.table_name }}-transactor'
         propagate_at_launch: 'true'

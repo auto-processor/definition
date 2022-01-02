@@ -1,0 +1,11 @@
+---
+- name: Create transactors
+  hosts: localhost
+  connection: local
+  roles:
+    - role: transactors
+      vars:
+        transactors:
+          - table_name: processor
+            aws_region: us-east-1
+            version: 1.0.6344
