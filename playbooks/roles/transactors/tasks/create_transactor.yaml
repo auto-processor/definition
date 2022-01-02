@@ -1,6 +1,6 @@
 ---
 
-- name: Create dynamo table with primary key
+- name: 'Create dynamo {{ item.table_name }} table with primary key'
   community.aws.dynamodb_table:
     name: '{{ item.table_name }}'
     region: '{{ item.aws_region }}'
@@ -15,7 +15,7 @@
   amazon.aws.aws_caller_info:
   register: caller_info
 
-- name: Create the transactor role
+- name: 'Create the {{ item.table_name }} transactor role'
   community.aws.iam_role:
     name: '{{ item.table_name }}-transactor-role'
     purge_policies: false
@@ -25,7 +25,7 @@
       name: '{{ item.table_name }}-transactor-role'
   register: transactor_role
 
-- name: Create the transactor policy
+- name: 'Create the {{ item.table_name }} transactor policy'
   community.aws.iam_policy:
     iam_type: role
     iam_name: '{{ transactor_role.role_name }}'
@@ -33,7 +33,7 @@
     state: present
     policy_json: "{{ lookup( 'template', 'transactor-policy.json.j2') }}"
 
-- name: Create the peer role
+- name: 'Create the {{ item.table_name }} peer role'
   community.aws.iam_role:
     name: '{{ item.table_name }}-peer-role'
     purge_policies: false
@@ -43,7 +43,7 @@
       name: '{{ item.table_name }}-peer-role'
   register: peer_role
 
-- name: Create the peer policy
+- name: 'Create the {{ item.table_name }} peer policy'
   community.aws.iam_policy:
     iam_type: role
     iam_name: '{{ peer_role.role_name }}'
@@ -70,7 +70,7 @@
         rule_desc: 'allow all on port {{ datomic_port }}'
   register: sg
 
-- name: Create an ec2 launch template
+- name: 'Create the {{ item.table_name }} ec2 launch template'
   community.aws.ec2_launch_template:
     name: '{{ item.table_name }}-transactor-template'
     image_id: '{{ image_ids[item.aws_region] }}'
@@ -84,7 +84,7 @@
         virtual_name: "ephemeral0"
   register: launch_template
 
-- name: Create an ec2 autoscaling group
+- name: 'Create the {{ item.table_name }} ec2 autoscaling group'
   community.aws.ec2_asg:
     name: '{{ item.table_name }}-transactor-autoscaling-group'
     launch_template:
