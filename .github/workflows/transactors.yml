@@ -5,11 +5,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: ls -a
     - name: Lint Ansible Playbook
       uses: ansible/ansible-lint-action@master
       with:
-        targets: ./playbooks
+        targets: playbooks
   deploy:
     runs-on: ubuntu-latest
     needs: 
