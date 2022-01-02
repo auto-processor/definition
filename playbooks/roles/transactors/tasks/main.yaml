@@ -1,6 +1,5 @@
 ---
 
 - name: Create transactors
-  include_tasks: create_transactor.yaml
+  include_task: create_transactor.yaml
   loop: '{{ transactors }}'
-
