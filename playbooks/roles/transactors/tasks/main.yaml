@@ -1,5 +1,9 @@
 ---
+- name: Get transactors
+  include_vars:
+    dir: transactors
+    name: transactors
 
 - name: Create transactors
   include_tasks: create_transactor.yaml
-  loop: '{{ transactors }}'
+  loop: "{{ transactors | dict2items | map(attribute='value') }}"

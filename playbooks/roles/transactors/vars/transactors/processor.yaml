@@ -1,0 +1,5 @@
+---
+processor_transactor:
+  table_name: processor
+  aws_region: us-east-1
+  version: 1.0.6344
