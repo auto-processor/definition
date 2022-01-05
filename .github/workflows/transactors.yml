@@ -1,14 +1,8 @@
 name: Transactors
-on: [pull_request, push]
+on:
+  push:
+    branches: [ main ]
 jobs:
-  ansible-lint:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - name: Lint Ansible Playbook
-      uses: ansible/ansible-lint-action@master
-      with:
-        targets: ./playbooks/transactors.yaml
   deploy:
     runs-on: ubuntu-latest
     needs: 
