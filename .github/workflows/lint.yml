@@ -9,5 +9,5 @@ jobs:
         uses: ansible/ansible-lint-action@master
         with:
           targets: |
-          ./playbooks/transactors.yaml
-          ./playbooks/services.yaml
+            ./playbooks/transactors.yaml
+            ./playbooks/services.yaml
