@@ -1,2 +1,1 @@
 # processor_definition
-test
