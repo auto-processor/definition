@@ -10,9 +10,7 @@ jobs:
       - name: Lint Ansible Playbook
         uses: ansible/ansible-lint-action@master
         with:
-          targets: |
-            ./services.yaml
-            ./transactors.yaml
+          targets: ./transactors.yaml
   deploy:
     runs-on: ubuntu-latest
     needs:
