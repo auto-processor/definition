@@ -10,9 +10,7 @@ jobs:
       - name: Lint Ansible Playbook
         uses: ansible/ansible-lint-action@master
         with:
-          targets: |
-            deploy_infra.yml
-            lint.yml
+          targets: "./"
   deploy:
     runs-on: ubuntu-latest
     needs:
@@ -29,7 +27,7 @@ jobs:
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: transactors.yaml
+          playbook: transactors.yml
           inventory: |
             localhost ansible_connection=local
           options: |
