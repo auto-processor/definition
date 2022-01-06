@@ -11,5 +11,5 @@ jobs:
         uses: ansible/ansible-lint-action@master
         with:
           targets: |
-            services.yml
-            transactors.yml
+            services.yaml
+            transactors.yaml
