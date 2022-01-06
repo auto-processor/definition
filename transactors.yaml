@@ -3,6 +3,4 @@
   hosts: localhost
   connection: local
   roles:
-    - roe: transactors
-
-
+    - role: transactors
