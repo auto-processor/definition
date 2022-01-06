@@ -10,7 +10,9 @@ jobs:
       - name: Lint Ansible Playbook
         uses: ansible/ansible-lint-action@master
         with:
-          targets: ./
+          targets: |
+            deploy_infra.yml
+            lint.yml
   deploy:
     runs-on: ubuntu-latest
     needs:
