@@ -11,8 +11,8 @@ jobs:
         uses: ansible/ansible-lint-action@master
         with:
           targets: |
-            services.yaml
-            transactors.yaml
+            ./services.yaml
+            ./transactors.yaml
   deploy:
     runs-on: ubuntu-latest
     needs:
