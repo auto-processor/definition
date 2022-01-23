@@ -13,3 +13,5 @@ jobs:
           targets: |
             services.yaml
             transactors.yaml
+          override-deps: |
+            rich>=9.5.1,<11.0.0

@@ -10,7 +10,9 @@ jobs:
       - name: Lint Ansible Playbook
         uses: ansible/ansible-lint-action@master
         with:
-          targets: services.yaml
+          targets: |
+            services.yaml
+            transactors.yaml
           override-deps: |
             rich>=9.5.1,<11.0.0
   deploy:
