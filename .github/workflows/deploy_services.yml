@@ -10,7 +10,7 @@ jobs:
       - name: Lint Ansible Playbook
         uses: ansible/ansible-lint-action@master
         with:
-          targets: transactors.yaml
+          targets: services.yaml
           override-deps: |
             rich>=9.5.1,<11.0.0
   deploy:
@@ -29,8 +29,6 @@ jobs:
       - name: Run playbook
         uses: dawidd6/action-ansible-playbook@v2
         with:
-          playbook: transactors.yaml
+          playbook: services.yaml
           inventory: |
             localhost ansible_connection=local
-          options: |
-            --extra-vars license_key=${{ secrets.DATOMIC_LICENSE_KEY }}
