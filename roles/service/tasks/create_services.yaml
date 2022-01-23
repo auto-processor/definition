@@ -1,0 +1,5 @@
+---
+- name: create ECR repo
+  community.aws.ecs_ecr:
+    name: '{{ item.name }}'
+    policy: "{{ lookup('template', 'ecr_policy.json.j2') }}"

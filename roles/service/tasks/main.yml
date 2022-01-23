@@ -1,2 +1,9 @@
 ---
-# tasks file for playbooks/roles/service
+- name: Get services
+  include_vars:
+    dir: services
+    name: services
+
+- name: Create services
+  include_tasks: create_services.yaml
+  loop: "{{ services | dict2items | map(attribute='value') }}"
