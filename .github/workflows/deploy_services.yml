@@ -28,7 +28,7 @@ jobs:
           aws-region: us-east-1
       - name: Run playbook
         env:
-          GITHUB_TOKEN: ${{ secrets.REPO_SETUP_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: services.yaml
