@@ -1,0 +1,28 @@
+---
+- name: Create repo from template
+  command: >
+    gh repo create auto-processor/{{ item.name }} --public
+    --template auto-processor/lambda-service-template
+
+- name: Clone repo
+  ansible.builtin.git:
+    repo: 'https://github.com/auto-processor/{{ item.name }}.git'
+    dest: service
+
+- name: Add repo vars
+  ansible.builtin.template:
+    src: cookiecutter.json.j2
+    dest: service/cookiecutter.json
+
+- name: Create repo from template
+  command:
+    cmd: "{{ push }}"
+    chdir: service
+  loop:
+    - git add .
+    - git commit -S -m "Initial commit"
+    - git push origin main
+  loop_control:
+    loop_var: push
+
+- command: rm -rf service

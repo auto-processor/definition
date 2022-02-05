@@ -1,5 +1,14 @@
 ---
-- name: create ECR repo
+- name: Create ECR repo
   community.aws.ecs_ecr:
     name: '{{ item.name }}'
     policy: "{{ lookup('template', 'ecr_policy.json.j2') }}"
+
+- name: Check if repo exists [ignore changed]
+  command: 'git ls-remote https://github.com/auto-processor/{{ item.name }}'
+  ignore_errors: true
+  register: result
+
+- name: Create GitHub repo and start workflow if it does not exist
+  include_tasks: deploy_first_time.yml
+  when: result is failed
