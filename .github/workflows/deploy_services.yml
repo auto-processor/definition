@@ -14,6 +14,8 @@ jobs:
           override-deps: |
             rich>=9.5.1,<11.0.0
   deploy:
+    env:
+      REPO_SETUP_TOKEN: ${{ secrets.REPO_SETUP_TOKEN }}
     runs-on: ubuntu-latest
     needs:
       - ansible-lint
@@ -28,8 +30,7 @@ jobs:
           aws-region: us-east-1
       - name: Run playbook
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OWNER: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ env.REPO_SETUP_TOKEN }}
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: services.yaml
