@@ -3,16 +3,19 @@
   command: >
     gh repo create auto-processor/{{ item.name }} --public
     --template auto-processor/lambda-service-template
+  changed_when: true
 
 - name: Clone repo
   ansible.builtin.git:
     repo: 'https://github.com/auto-processor/{{ item.name }}.git'
     dest: service
+    version: v1
 
 - name: Add repo vars
   ansible.builtin.template:
     src: cookiecutter.json.j2
     dest: service/cookiecutter.json
+    mode: '0644'
 
 - name: Create repo from template
   command:
@@ -24,5 +27,10 @@
     - git push origin main
   loop_control:
     loop_var: push
+  changed_when: true
 
-- command: rm -rf service
+- name: remove cloned repo
+  ansible.builtin.file:
+    path: /etc/some_directory
+    state: absent
+    mode: '0644'

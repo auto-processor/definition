@@ -4,8 +4,9 @@
     name: '{{ item.name }}'
     policy: "{{ lookup('template', 'ecr_policy.json.j2') }}"
 
-- name: Check if repo exists [ignore changed]
-  command: 'git ls-remote https://github.com/auto-processor/{{ item.name }}'
+- name: Check if remote repo exists
+  command: 'gh repo view auto-processor/{{ item.name }}'
+  changed_when: false
   ignore_errors: true
   register: result
 
