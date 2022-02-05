@@ -17,8 +17,6 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - ansible-lint
-    env:
-      REPO_SETUP_TOKEN: ${{ secrets.REPO_SETUP_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - run: pip install boto3
@@ -30,7 +28,7 @@ jobs:
           aws-region: us-east-1
       - name: Run playbook
         env:
-          GITHUB_TOKEN: ${{ env.REPO_SETUP_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.REPO_SETUP_TOKEN }}
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: services.yaml
