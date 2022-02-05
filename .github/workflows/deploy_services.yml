@@ -29,6 +29,7 @@ jobs:
       - name: Run playbook
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          OWNER: ${{ github.repository_owner }}
         uses: dawidd6/action-ansible-playbook@v2
         with:
           playbook: services.yaml
