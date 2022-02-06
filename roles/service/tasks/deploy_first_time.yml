@@ -22,12 +22,10 @@
     cmd: "{{ push }}"
     chdir: service
   loop:
-    - git config --global user.email "github-actions[bot]@users.noreply.github.com"
-    - git config --global user.name "github-actions[bot]"
     - git checkout -b temp-branch
     - git add .
     - git commit -m 'Initial commit'
-    - "git push https://{{ lookup('env', 'GITHUB_TOKEN') }}@github.com/auto-processor/{{ item.name }}.git temp-branch:main"
+    - "git push git@github.com:auto-processor/{{ item.name }}.git temp-branch:main"
   loop_control:
     loop_var: push
   changed_when: true
