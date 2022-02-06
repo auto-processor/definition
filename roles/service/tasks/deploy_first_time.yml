@@ -9,7 +9,7 @@
   ansible.builtin.git:
     repo: 'https://github.com/auto-processor/{{ item.name }}.git'
     dest: service
-    version: v1
+    version: main
 
 - name: Add repo vars
   ansible.builtin.template:
@@ -31,6 +31,6 @@
 
 - name: remove cloned repo
   ansible.builtin.file:
-    path: /etc/some_directory
+    path: service
     state: absent
     mode: '0644'
