@@ -27,7 +27,7 @@
     - git checkout -b temp-branch
     - git add .
     - git commit -m 'Initial commit'
-    - git push origin temp-branch:main
+    - 'git push git@github.com:auto-processor/{{ item.name }}.git temp-branch:main'
   loop_control:
     loop_var: push
   changed_when: true
