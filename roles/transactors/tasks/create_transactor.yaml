@@ -37,7 +37,7 @@
   community.aws.iam_role:
     name: '{{ item.table_name }}-peer-role'
     purge_policies: false
-    assume_role_policy_document: "{{ lookup('template','peer-role.json.j2') }}"
+    assume_role_policy_document: "{{ lookup('template','lambda_role.json.j2') }}"
     description: Peer role
     tags:
       name: '{{ item.table_name }}-peer-role'

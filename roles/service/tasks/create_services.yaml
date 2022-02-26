@@ -1,8 +1,6 @@
 ---
-- name: Create ECR repo
-  community.aws.ecs_ecr:
-    name: '{{ item.name }}'
-    policy: "{{ lookup('template', 'ecr_policy.json.j2') }}"
+- name: Act on lambda infraestructure
+  include_tasks: deploy.yml
 
 - name: Check if remote repo exists
   command: 'gh repo view auto-processor/{{ item.name }}'
