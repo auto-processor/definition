@@ -10,6 +10,8 @@
     repo: 'https://github.com/auto-processor/{{ item.name }}.git'
     dest: service
     version: main
+  retries: 3
+  delay: 3
 
 - name: Add repo vars
   ansible.builtin.template:
