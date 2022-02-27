@@ -12,6 +12,8 @@
     version: main
   retries: 3
   delay: 3
+  register: cloning_result
+  until: cloning_result.rc == 0
 
 - name: Add repo vars
   ansible.builtin.template:
