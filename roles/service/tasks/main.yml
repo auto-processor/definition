@@ -7,7 +7,7 @@
 - name: Check if it's run from a repo different to definition
   set_fact:
     service_to_deploy: "{{ [lookup('env', 'GITHUB_REPOSITORY_NAME')]
-                        | regex_replace('-', '_') | map('extract', services)
+                        | map('regex_replace', '-', '_') | map('extract', services)
                         | first | default(None) }}"
 
 - name: Act on services infrastructure

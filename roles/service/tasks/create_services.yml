@@ -26,14 +26,15 @@
   amazon.aws.aws_caller_info:
   register: caller_info
 
-# - name: Setup AWS API Gateway on AWS
+#- name: Setup AWS API Gateway on AWS
 #  community.aws.aws_api_gateway:
 #    api_id: "{{ caller_info.account }}-{{ item.name }}"
+#    swagger_dict: {}
 #    region: us-east-1
 #    stage: production
 #    deploy_desc: "This is the {{ item.name }} API gateway"
 #    tracing_enabled: true
-#    endpoint_type: EDGE
+#    endpoint_type: Regional
 #    state: present
 
 - name: Create GitHub repo and start workflow if it does not exist
