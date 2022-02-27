@@ -19,4 +19,4 @@
   include_tasks: deploy_service.yml
   vars:
     service: service_to_deploy
-  when: is_deploying_infra | length > 0
+  when: service_to_deploy | length > 0
