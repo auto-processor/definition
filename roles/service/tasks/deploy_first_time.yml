@@ -13,7 +13,7 @@
   retries: 3
   delay: 3
   register: cloning_result
-  until: cloning_result.rc == 0
+  until: cloning_result is not failed
 
 - name: Add repo vars
   ansible.builtin.template:
@@ -21,7 +21,7 @@
     dest: service/cookiecutter.json
     mode: '0644'
 
-- name: Create repo from template
+- name: Reinitialize repo
   command:
     cmd: "{{ push }}"
     chdir: service
