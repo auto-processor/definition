@@ -1,4 +1,4 @@
 ---
-bff-lambda:
+bff_lambda:
   name: bff-lambda
   memory: 2000

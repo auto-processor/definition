@@ -6,17 +6,17 @@
 
 - name: Check if it's run from a repo different to definition
   set_fact:
-    is_deploying_infra: "{{ [lookup('env', 'GITHUB_REPOSITORY_NAME')]
-                        | map('extract', services)
+    service_to_deploy: "{{ [lookup('env', 'GITHUB_REPOSITORY_NAME')]
+                        | regex_replace('-', '_') | map('extract', services)
                         | first | default(None) }}"
 
 - name: Act on services infrastructure
   include_tasks: create_services.yml
   loop: "{{ services | dict2items | map(attribute='value') }}"
-  when: is_deploying_infra | length == 0
+  when: service_to_deploy | length == 0
 
 - name: Deploy specific service
   include_tasks: deploy_service.yml
   vars:
-    service: is_deploying_infra
+    service: service_to_deploy
   when: is_deploying_infra | length > 0
