@@ -1,0 +1,4 @@
+---
+auto-processor/bff-lambda:
+  name: bff-lambda
+  memory: 2000

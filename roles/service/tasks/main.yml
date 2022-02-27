@@ -4,6 +4,18 @@
     dir: services
     name: services
 
-- name: Create services
+- set_fact:
+    is_deploying_infra: "{{ [lookup('env', 'GITHUB_REPOSITORY')]
+                        | map('extract', services)
+                        | first | default(None) }}"
+
+- name: Act on services infrastructure
   include_tasks: create_services.yaml
   loop: "{{ services | dict2items | map(attribute='value') }}"
+  when: is_deploying_infra | length == 0
+
+- name: Deploy specific service
+  include_tasks: deploy_service.yaml
+  vars:
+    service: is_deploying_infra
+  when: is_deploying_infra | length > 0

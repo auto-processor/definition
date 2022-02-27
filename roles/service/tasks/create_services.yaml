@@ -1,12 +1,40 @@
 ---
-- name: Act on lambda infraestructure
-  include_tasks: deploy.yml
 
 - name: Check if remote repo exists
   command: 'gh repo view auto-processor/{{ item.name }}'
   changed_when: false
   ignore_errors: true
   register: result
+
+- name: "Act on {{ item.name }} lambda role"
+  community.aws.iam_role:
+    name: "{{ item.name }}LambdaRole"
+    purge_policies: false
+    assume_role_policy_document: "{{ lookup('template','lambda_role.json.j2') }}"
+    description: "This is the {{ item.name }} role"
+  register: lambda_role
+
+- name: 'Act on {{ item.name }} lambda policy'
+  community.aws.iam_policy:
+    iam_type: role
+    iam_name: '{{ lambda_role.role_name }}'
+    policy_name: '{{ item.name }}-lambda-policy'
+    state: present
+    policy_json: "{{ lookup( 'template', 'lambda_policy.json.j2') }}"
+
+- name: Get the current caller identity information
+  amazon.aws.aws_caller_info:
+  register: caller_info
+
+#- name: Setup AWS API Gateway on AWS
+#  community.aws.aws_api_gateway:
+#    api_id: "{{ caller_info.account }}-{{ item.name }}"
+#    region: us-east-1
+#    stage: production
+#    deploy_desc: "This is the {{ item.name }} API gateway"
+#    tracing_enabled: true
+#    endpoint_type: EDGE
+#    state: present
 
 - name: Create GitHub repo and start workflow if it does not exist
   include_tasks: deploy_first_time.yml

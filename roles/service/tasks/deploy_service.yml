@@ -1,0 +1,16 @@
+---
+- name: "Act on {{ service.name }} lambda"
+  community.aws.lambda:
+    name: '{{ service.name }}'
+    state: present
+    s3_bucket: lambdas-auto-processor
+    s3_key: "{{ service.name }}/{{ service.name }}-
+             {{ chosen_build_number if
+             chosen_build_number is defined
+             else lookup('env', 'GITHUB_RUN_NUMBER') }}"
+    memory_size: service.memory
+    runtime: 'Custom runtime on Amazon Linux 2'
+    role: lambda_role.arn
+    handler: "{{ service.name }}.lambda.HttpAPIProxyGateway"
+    tags:
+      name: '{{ service.name }}'
