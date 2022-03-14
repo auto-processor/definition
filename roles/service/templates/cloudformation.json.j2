@@ -1,0 +1,69 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "{{ item.name }} basic lambda using `holy-lambda` micro library\n",
+  "Outputs": {
+    "TestEndpoint": {
+      "Description": "Test endpoint",
+      "Value": {
+        "Fn::Sub": "https://${ServerlessHttpApi}.execute-api.${AWS::Region}.amazonaws.com"
+      }
+    }
+  },
+  "Resources": {
+    "ServerlessHttpApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Body": {
+          "info": {
+            "version": "1.0",
+            "title": {
+              "Ref": "AWS::StackName"
+            }
+          },
+          "paths": {
+            "/{proxy+}": {
+              "x-amazon-apigateway-any-method": {
+                "x-amazon-apigateway-integration": {
+                  "httpMethod": "POST",
+                  "type": "aws_proxy",
+                  "uri": {
+                    "Fn::Sub": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:{{ caller_info.account }}:function:{{ item.name }}/invocations"
+                  },
+                  "payloadFormatVersion": "2.0"
+                },
+                "responses": {},
+                "parameters": [
+                  {
+                    "required": true,
+                    "name": "proxy+",
+                    "in": "path"
+                  }
+                ]
+              }
+            }
+          },
+          "openapi": "3.0.1",
+          "tags": [
+            {
+              "name": "httpapi:createdBy",
+              "x-amazon-apigateway-tag-value": "Auto-processor"
+            }
+          ]
+        }
+      }
+    },
+    "ServerlessHttpApiApiGatewayDefaultStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": {
+          "Ref": "ServerlessHttpApi"
+        },
+        "StageName": "$default",
+        "Tags": {
+          "httpapi:createdBy": "Auto-processor"
+        },
+        "AutoDeploy": true
+      }
+    }
+  }
+}

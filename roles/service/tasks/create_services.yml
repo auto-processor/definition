@@ -26,16 +26,15 @@
   amazon.aws.aws_caller_info:
   register: caller_info
 
-#- name: Setup AWS API Gateway on AWS
-#  community.aws.aws_api_gateway:
-#    api_id: "{{ caller_info.account }}-{{ item.name }}"
-#    swagger_dict: {}
-#    region: us-east-1
-#    stage: production
-#    deploy_desc: "This is the {{ item.name }} API gateway"
-#    tracing_enabled: true
-#    endpoint_type: Regional
-#    state: present
+- name: Setup AWS API Gateway on AWS
+  amazon.aws.cloudformation:
+    stack_name: "{{ item.name }}-api-gateway"
+    state: present
+    region: us-east-1
+    disable_rollback: true
+    template_body: "{{ lookup('template', 'cloudformation.json.j2') }}"
+    tags:
+      Stack: "{{ item.name }}-api-gateway"
 
 - name: Create GitHub repo and start workflow if it does not exist
   include_tasks: deploy_first_time.yml
