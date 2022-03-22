@@ -8,7 +8,7 @@
 
 - name: "Act on {{ item.name }} lambda role"
   community.aws.iam_role:
-    name: "{{ item.name }}LambdaRole"
+    name: "{{ item.name }}-lambda-role"
     purge_policies: false
     assume_role_policy_document: "{{ lookup('template','lambda_role.json.j2') }}"
     description: "This is the {{ item.name }} role"

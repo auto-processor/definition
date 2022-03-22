@@ -18,5 +18,5 @@
 - name: Deploy specific service
   include_tasks: deploy_service.yml
   vars:
-    service: service_to_deploy
+    service: "{{ service_to_deploy }}"
   when: service_to_deploy | length > 0

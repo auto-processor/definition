@@ -1,16 +1,21 @@
 ---
+- name: "Get {{ service.name }} lambda role info"
+  community.aws.iam_role_info:
+    name: "{{ service.name }}-lambda-role"
+  register: lambda_role
+
 - name: "Act on {{ service.name }} lambda"
   community.aws.lambda:
     name: '{{ service.name }}'
     state: present
     s3_bucket: lambdas-auto-processor
-    s3_key: "{{ service.name }}/{{ service.name }}-
-             {{ chosen_build_number if
+    s3_key: "{{ service.name }}/{{ service.name }}-{{
+             chosen_build_number if
              chosen_build_number is defined
-             else lookup('env', 'GITHUB_RUN_NUMBER') }}"
-    memory_size: service.memory
-    runtime: 'Custom runtime on Amazon Linux 2'
-    role: lambda_role.arn
+             else lookup('env', 'GITHUB_RUN_NUMBER') }}.zip"
+    memory_size: "{{ service.memory }}"
+    runtime: "provided.al2"
+    role: "{{ lambda_role.iam_roles | first | community.general.json_query('arn') }}"
     handler: "{{ service.name }}.lambda.HttpAPIProxyGateway"
     tags:
       name: '{{ service.name }}'
