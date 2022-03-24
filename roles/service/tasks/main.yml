@@ -10,8 +10,14 @@
                         | map('regex_replace', '-', '_') | map('extract', services)
                         | first | default(None) }}"
 
+- name: Get the current caller identity information
+  amazon.aws.aws_caller_info:
+  register: caller_identity_info
+
 - name: Act on services infrastructure
   include_tasks: create_services.yml
+  vars:
+    caller_info: "{{ caller_identity_info }}"
   loop: "{{ services | dict2items | map(attribute='value') }}"
   when: service_to_deploy | length == 0
 
@@ -19,4 +25,5 @@
   include_tasks: deploy_service.yml
   vars:
     service: "{{ service_to_deploy }}"
+    caller_info: "{{ caller_identity_info }}"
   when: service_to_deploy | length > 0

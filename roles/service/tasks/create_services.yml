@@ -22,10 +22,6 @@
     state: present
     policy_json: "{{ lookup( 'template', 'lambda_policy.json.j2') }}"
 
-- name: Get the current caller identity information
-  amazon.aws.aws_caller_info:
-  register: caller_info
-
 - name: Setup AWS API Gateway on AWS
   amazon.aws.cloudformation:
     stack_name: "{{ item.name }}-api-gateway"

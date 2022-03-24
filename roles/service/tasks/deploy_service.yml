@@ -19,3 +19,15 @@
     handler: "{{ service.name }}.lambda.HttpAPIProxyGateway"
     tags:
       name: '{{ service.name }}'
+
+# - name: Act on lambda API Gateway event permission
+#  community.aws.lambda_policy:
+#    state: present
+#    function_name: '{{ service.name }}'
+#    alias: Dev
+#    statement_id: lambda-s3-myBucket-create-data-log
+#    action: lambda:InvokeFunction
+#    principal: apigateway.amazonaws.com
+#    source_arn: arn:aws:s3:eu-central-1:123456789012:bucketName
+#    source_account: 123456789012
+#  register: lambda_policy_action
