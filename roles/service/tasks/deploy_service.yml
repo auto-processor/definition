@@ -4,6 +4,13 @@
     name: "{{ service.name }}-lambda-role"
   register: lambda_role
 
+- name: Create repo from template
+  command: >
+    aws resourcegroupstaggingapi get-resources
+    --tag-filters Key=Name,Values={{ service.name }}-api-gateway
+  changed_when: false
+  register: api_gateway
+
 - name: "Act on {{ service.name }} lambda"
   community.aws.lambda:
     name: '{{ service.name }}'
@@ -15,19 +22,18 @@
              else lookup('env', 'GITHUB_RUN_NUMBER') }}.zip"
     memory_size: "{{ service.memory }}"
     runtime: "provided.al2"
-    role: "{{ lambda_role.iam_roles | first | community.general.json_query('arn') }}"
+    role: "{{ (lambda_role.iam_roles | first).arn }}"
     handler: "{{ service.name }}.lambda.HttpAPIProxyGateway"
     tags:
-      name: '{{ service.name }}'
+      Name: '{{ service.name }}'
 
-# - name: Act on lambda API Gateway event permission
-#  community.aws.lambda_policy:
-#    state: present
-#    function_name: '{{ service.name }}'
-#    alias: Dev
-#    statement_id: lambda-s3-myBucket-create-data-log
-#    action: lambda:InvokeFunction
-#    principal: apigateway.amazonaws.com
-#    source_arn: arn:aws:s3:eu-central-1:123456789012:bucketName
-#    source_account: 123456789012
-#  register: lambda_policy_action
+- name: Act on lambda API Gateway event permission
+  community.aws.lambda_policy:
+    state: present
+    function_name: '{{ service.name }}'
+    version: 1
+    statement_id: "lambda-api-gateway-{{ service.name }}"
+    action: lambda:InvokeFunction
+    principal: apigateway.amazonaws.com
+    source_arn: "{{ ((api_gateway.stdout | from_json).ResourceTagMappingList | first).ResourceARN }}/*/*/*"
+    source_account: "{{ caller_info.account }}"

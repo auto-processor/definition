@@ -30,7 +30,7 @@
     disable_rollback: true
     template_body: "{{ lookup('template', 'cloudformation.json.j2') }}"
     tags:
-      Stack: "{{ item.name }}-api-gateway"
+      Stack: "{{ item.name }}-api-gateway-stack"
 
 - name: Create GitHub repo and start workflow if it does not exist
   include_tasks: deploy_first_time.yml
