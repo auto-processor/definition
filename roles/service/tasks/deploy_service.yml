@@ -31,7 +31,6 @@
   community.aws.lambda_policy:
     state: present
     function_name: '{{ service.name }}'
-    version: 1
     statement_id: "lambda-api-gateway-{{ service.name }}"
     action: lambda:InvokeFunction
     principal: apigateway.amazonaws.com
