@@ -27,6 +27,11 @@
     tags:
       Name: '{{ service.name }}'
 
+- name: Create var for id from api gateway resourse
+  set_fact:
+    api_gateway_id: "{{ ((api_gateway.stdout | from_json).ResourceTagMappingList
+                     | first).ResourceARN | regex_search('(?<=\/apis\/).*') }}"
+
 - name: Act on lambda API Gateway event permission
   community.aws.lambda_policy:
     state: present
@@ -34,5 +39,5 @@
     statement_id: "lambda-api-gateway-{{ service.name }}"
     action: lambda:InvokeFunction
     principal: apigateway.amazonaws.com
-    source_arn: "{{ ((api_gateway.stdout | from_json).ResourceTagMappingList | first).ResourceARN }}/*/*/*"
+    source_arn: "arn:aws:execute-api:us-east-1:{{ caller_info.account }}:{{ api_gateway_id }}/*/*/*"
     source_account: "{{ caller_info.account }}"
