@@ -4,7 +4,7 @@
         {
             "Effect": "Allow",
             "Action": "logs:CreateLogGroup",
-            "Resource": "arn:aws:logs:us-east-1:165909058682:*"
+            "Resource": "arn:aws:logs:{{ item.region }}:{{ caller_info.account }}:*"
         },
         {
             "Effect": "Allow",
@@ -13,7 +13,7 @@
                 "logs:PutLogEvents"
             ],
             "Resource": [
-                "arn:aws:logs:us-east-1:165909058682:log-group:/aws/lambda/ExampleLambdaFunction:*"
+                "arn:aws:logs:{{ item.region }}:{{ caller_info.account }}:log-group:/aws/lambda/{{ item.name }}:*"
             ]
         },
         {
@@ -25,7 +25,7 @@
                 "dynamodb:Scan",
                 "dynamodb:UpdateItem"
             ],
-            "Resource": "arn:aws:dynamodb:us-east-1:165909058682:table/{{ item.name }}"
+            "Resource": "arn:aws:dynamodb:{{ item.region }}:{{ caller_info.account }}:table/{{ item.name }}"
         }
     ]
 }

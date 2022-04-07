@@ -27,7 +27,7 @@
                   "httpMethod": "POST",
                   "type": "aws_proxy",
                   "uri": {
-                    "Fn::Sub": "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:{{ caller_info.account }}:function:{{ item.name }}/invocations"
+                    "Fn::Sub": "arn:aws:apigateway:{{ item.region }}:lambda:path/2015-03-31/functions/arn:aws:lambda:{{ item.region }}:{{ caller_info.account }}:function:{{ item.name }}/invocations"
                   },
                   "payloadFormatVersion": "2.0"
                 },

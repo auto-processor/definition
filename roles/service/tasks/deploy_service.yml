@@ -39,5 +39,15 @@
     statement_id: "lambda-api-gateway-{{ service.name }}"
     action: lambda:InvokeFunction
     principal: apigateway.amazonaws.com
-    source_arn: "arn:aws:execute-api:us-east-1:{{ caller_info.account }}:{{ api_gateway_id }}/*/*/*"
+    source_arn: "arn:aws:execute-api:{{ service.region }}:{{ caller_info.account }}:{{ api_gateway_id }}/*/*/*"
     source_account: "{{ caller_info.account }}"
+
+- name: Put integration api gateway
+  command: >
+    aws apigatewayv2 create-integration
+            --api-id {{ api_gateway_id }}
+            --integration-method ANY
+            --integration-uri arn:aws:lambda:{{ service.region }}:{{ caller_info.account }}:function:{{ service.name }}
+            --integration-type AWS_PROXY
+            --payload-format-version 2.0
+  changed_when: true

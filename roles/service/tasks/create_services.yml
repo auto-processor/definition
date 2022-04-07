@@ -26,7 +26,7 @@
   amazon.aws.cloudformation:
     stack_name: "{{ item.name }}-api-gateway"
     state: present
-    region: us-east-1
+    region: "{{ item.region }}"
     disable_rollback: true
     template_body: "{{ lookup('template', 'cloudformation.json.j2') }}"
     tags:

@@ -1,5 +1,5 @@
 ---
 processor_transactor:
-  table_name: processor
+  table_name: bff-lambda
   aws_region: us-east-1
   version: 1.0.6344

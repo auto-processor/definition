@@ -2,3 +2,4 @@
 bff_lambda:
   name: bff-lambda
   memory: 2000
+  region: us-east-1
